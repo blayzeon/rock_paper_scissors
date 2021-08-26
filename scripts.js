@@ -38,11 +38,7 @@ function computerPlay(){
     }
 }
 
-function playTurn(playerSelection, computerSelection){
-    // take the player and computer's choices and store them as lowercase
-    let player = playerSelection;
-    let computer = computerSelection;
-
+function playTurn(player, computer){
     // maps out what each choice is weak to
     const moves = [
         {
@@ -86,12 +82,12 @@ function playTurn(playerSelection, computerSelection){
 function checkPlayerChoice(choice){
     if (choice == null){
         // keep asking until we get an answer
-        promptPlayer();
+        game();
     } else if (choice == 'rock' || choice == 'paper' || choice == 'scissors'){
         return true
     } else {
         alert('That is not a valid choice!');
-        promptPlayer();
+        game();
     }
 }
 
