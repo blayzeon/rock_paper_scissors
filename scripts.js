@@ -5,6 +5,12 @@
 
 */
 
+
+// KEEPS TRACK OF THE GAME
+const GAME_ROUNDS = 5;
+let roundsPlayed = 0;
+let score = 0;
+
 // Random number generator
 function getRandomInt(min, max){
     min = Math.ceil(min);
@@ -34,8 +40,8 @@ function computerPlay(){
 
 function playTurn(playerSelection, computerSelection){
     // take the player and computer's choices and store them as lowercase
-    let player = playerSelection.toLowerCase();
-    let computer = computerSelection.toLowerCase();
+    let player = playerSelection;
+    let computer = computerSelection;
 
     // maps out what each choice is weak to
     const moves = [
@@ -52,19 +58,15 @@ function playTurn(playerSelection, computerSelection){
             weakness: 'rock',
         },
     ];
-    console.group('Swings...');
-    console.log(`You chose ${player}!`);
-    console.log(`The computer chose ${computer}!`);
 
     if (player == computer){
         // if the player and computer chose the same thing, it's a draw
         return {score: 0,
-        message: `It's a draw!  You both chose ${moves[i].choice}!`};
+        message: `It's a draw!  You both chose ${player}!`};
     }
 
     // Otherwise, loop through the different combinations
     for (i = 0; i < moves.length; i++){
-        console.log(i)
         if (player == moves[i].choice){
             // The player is currently sync'd with [i]
             if (computer == moves[i].weakness){
@@ -80,42 +82,43 @@ function playTurn(playerSelection, computerSelection){
     }
 }
 
-function checkChoice(choice){
-    let playerChoice = choice.toLowerCase;
 
-    if (playerChoice == 'rock' || playerChoice == 'paper' || playerChoice == 'scissors'){
-        return true;
+function checkPlayerChoice(choice){
+    if (choice == null){
+        // keep asking until we get an answer
+        promptPlayer();
+    } else if (choice == 'rock' || choice == 'paper' || choice == 'scissors'){
+        return true
     } else {
-        return false;
+        alert('That is not a valid choice!');
+        promptPlayer();
     }
 }
 
 function game(){
-    const GAME_ROUNDS = 5;
-    let score = 0;
+    while (roundsPlayed < GAME_ROUNDS){
+        // loop through the game for each round we wish to play and prompts the player for a move
+        let choice = prompt('Rock, paper, or scissors?'); 
+            
+        if (checkPlayerChoice(choice) == true){
+            // store the result in a variable
+            let gameResult = playTurn(choice, computerPlay());
+            
+            // add or subtract from the score, and display a result message
+            score += gameResult.score;
 
-    for (i = 0; i <= GAME_ROUNDS; i++){
-        // loop through the game for each round we wish to play
+            // add to the rounds played
+            roundsPlayed ++;
 
-        // prompt the user for a valid move choice
-        let choice = prompt('Rock, paper, or scissors?');
-        while (checkChoice(choice) == true){
-            choice = prompt('Rock, paper, or scissors?');
+            console.log(gameResult.message);
         }
-        
-        // store the result in a variable
-        let gameResult = playTurn(choice, computerPlay());
-        
-        // add or subtract from the score, and display a result message
-        score += gameResult.score;
-        console.log(gameResult.message);
     }
-
+    
     // at the end of the game, display a final score
     if (score >= 1){
-        console.log(`Congratulations, you won ${score} out of ${GAME_ROUNDS}!`)
+        console.log(`Congratulations, you beat the computer!`)
     } else if (score < 0){
-        console.log(`Too bad! You lost ${score} out of ${GAME_ROUNDS}!`)
+        console.log(`Too bad! You lost to the computer!`)
     } else {
         console.log(`It's a complete draw!`)
     }
