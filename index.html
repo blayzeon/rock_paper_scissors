@@ -5,10 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
     <title>Rock Paper Scissors</title>
 </head>
 <body>
-    
+    <div class="container">
+        <div class="center">
+            <h1>Rock, Paper, Scissors</h1>
+            <p class="sub-heading"><small id="info-elm">Can you beat the computer in a best of 5 rounds?</small></p>
+            <p>Rounds Played: <span id="rounds-played">0</span></p>
+        </div>
+        <fieldset class="section">
+            <legend>Computer Score: <span id="computer-score">0</span></legend>
+            <i id="computer-choice" class="material-icons">help_outline</i>
+        </fieldset>
+        <fieldset class="section">
+            <legend>Your Score: <span id="player-score">0</span></legend>
+                <i class="material-icons" tabindex="1" id="rock" onclick="game('rock')">dangerous</i>
+                <i class="material-icons" tabindex="2" id="paper" onclick="game('paper')">description</i>
+                <i class="material-icons" tabindex="3" id="scissors" onclick="game('scissors')">content_cut</i>
+        </fieldset>
+    </div>
     <script src="scripts.js"></script>
 </body>
 </html>

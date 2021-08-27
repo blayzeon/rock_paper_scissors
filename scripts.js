@@ -9,13 +9,29 @@
 // KEEPS TRACK OF THE GAME
 const GAME_ROUNDS = 5;
 let roundsPlayed = 0;
-let score = 0;
+let playerScore = 0;
+let computerScore = 0;
 
 // Random number generator
 function getRandomInt(min, max){
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min) + min); 
+}
+
+function displayComputerPlay(choice){
+    const choiceElm = document.getElementById('computer-choice');
+    let iconChoice = '';
+
+    if (choice === 'rock'){
+        iconChoice = "dangerous";
+    } else if (choice === 'paper'){
+        iconChoice = "description";
+    } else { // scissors
+        iconChoice = "content_cut";
+    }
+
+    choiceElm.innerHTML = iconChoice;
 }
 
 function computerPlay(){
@@ -25,12 +41,15 @@ function computerPlay(){
     // compare that variable to the different options it could be, and return a move the CPU will make
     switch(computerChoice){
         case 1:
+            displayComputerPlay('rock');
             return 'rock';
             break;
         case 2:
+            displayComputerPlay('paper');
             return 'paper';
             break;
         case 3: 
+            displayComputerPlay('scissors');
             return 'scissors';
             break;
         default: 
@@ -78,46 +97,127 @@ function playTurn(player, computer){
     }
 }
 
+function updateScore(){
+    const player = document.getElementById('player-score');
+    const computer = document.getElementById('computer-score');
+    const rounds = document.getElementById('rounds-played');
 
-function checkPlayerChoice(choice){
-    if (choice == null){
-        // keep asking until we get an answer
-        game();
-    } else if (choice == 'rock' || choice == 'paper' || choice == 'scissors'){
-        return true
+    player.innerHTML = playerScore;
+    computer.innerHTML = computerScore;
+    rounds.innerHTML = roundsPlayed;
+}
+
+function endGame(){
+    const infoElm = document.getElementById('info-elm');
+    let message = ``;
+
+    if (playerScore > computerScore){
+        message = `Congratulations!  You beat the computer ${playerScore} out of ${roundsPlayed} rounds!!`;
+    } else if (computerScore > playerScore){
+        message = `Oh, no! The computer beat you ${computerScore} out of ${roundsPlayed} rounds!!`;
     } else {
-        alert('That is not a valid choice!');
-        game();
+        message = `Wow! Both the computer and you scored ${computerScore}!! It's a tie!!!`;
+    }
+
+    infoElm.innerHTML = message;
+}
+
+function resetGame(){
+    const DEFAULT_MESSAGE = "Can you beat the computer in a best of 5 rounds?";
+    // reset everything
+    let confirmReset = confirm('New game?');
+    if (confirmReset === true){
+        document.getElementById('info-elm').innerHTML = DEFAULT_MESSAGE; // resets the flavor text
+        document.getElementById('computer-choice').innerHTML = `help_outline`; // (?) for cpu's choice
+        
+        // reset all the scores
+        roundsPlayed = 0;
+        playerScore = 0;
+        computerScore = 0;
+        updateScore();  
+
+        // makes all the colors black
+        colorResult()
     }
 }
 
-function game(){
-    while (roundsPlayed < GAME_ROUNDS){
-        // loop through the game for each round we wish to play and prompts the player for a move
-        let choice = prompt('Rock, paper, or scissors?'); 
-            
-        if (checkPlayerChoice(choice) == true){
-            // store the result in a variable
-            let gameResult = playTurn(choice, computerPlay());
-            
-            // add or subtract from the score, and display a result message
-            score += gameResult.score;
+function colorResult(color = "black", choice = "none"){
+    const computerColor =  document.getElementById('computer-choice');
+    const moves = [
+        'rock',
+        'paper',
+        'scissors'
+    ];
 
-            // add to the rounds played
-            roundsPlayed ++;
+    // make them all black
+    for (i = 0; i < moves.length; i ++){
+        document.getElementById(moves[i]).style.color = "black";
+        computerColor.style.color = "black";
+    }
 
-            console.log(gameResult.message);
+    // color the selection based on result
+    if (choice != "none"){
+        document.getElementById(choice).style.color = color;
+
+        if (color === "red"){
+            computerColor.style.color = "green";
+        } else if (color === "green"){
+            computerColor.style.color = "red";
+        } else if (color === "blue"){
+            computerColor.style.color = "blue";
         }
-    }
-    
-    // at the end of the game, display a final score
-    if (score >= 1){
-        console.log(`Congratulations, you beat the computer!`)
-    } else if (score < 0){
-        console.log(`Too bad! You lost to the computer!`)
+    } 
+}
+
+
+function game(choice){   
+    if (roundsPlayed < GAME_ROUNDS){
+        // store the result in a variable
+        let gameResult = playTurn(choice, computerPlay());
+
+        // add to the score & color the player's piece red (lost), green (won), or blue (tied)
+        if (gameResult.score === -1){
+            computerScore ++;
+            colorResult('red', choice);
+        } else if (gameResult.score === 1){
+            playerScore ++;
+            colorResult('green', choice);
+        } else {
+            colorResult('blue', choice);
+        }
+
+        // add to the rounds played
+        roundsPlayed ++;
+
+        // updates everything
+        updateScore();
+
+        if (roundsPlayed === GAME_ROUNDS){
+            endGame();
+        }
+
     } else {
-        console.log(`It's a complete draw!`)
+        // end the game
+        resetGame();
     }
 }
 
-game();
+
+// allows the game to be played with just a keyboard
+document.getElementById('rock').addEventListener("keyup", function(e){
+    if (e.keyCode == 13){
+        game("rock");
+    }
+});
+
+document.getElementById('paper').addEventListener("keyup", function(e){
+    if (e.keyCode == 13){
+        game("paper");
+    }
+});
+
+document.getElementById('scissors').addEventListener("keyup", function(e){
+    if (e.keyCode == 13){
+        game("scissors");
+    }
+});
